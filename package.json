@@ -1,0 +1,25 @@
+{
+  "name": "aws-access",
+  "version": "1.0.0",
+  "description": "Update an AWS security group with your current IP",
+  "main": "index.js",
+  "homepage": "https://github.com/jamiemccrind/aws-access/",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "access": "./index.js"
+  },
+  "author": "Jamie McCrindle",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jamiemccrind/aws-access/"
+  },
+  "license": "Apache 2",
+  "dependencies": {
+    "aws-sdk": "^2.4.0",
+    "bluebird": "^3.4.1",
+    "request-promise": "^3.0.0",
+    "yargs": "^4.7.1"
+  }
+}
