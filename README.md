@@ -26,7 +26,7 @@ using environment variables.
 
 ## Command Line
 
-    access
+    aws-access
 
     Options:
       -h             Show help                                             [boolean]
