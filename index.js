@@ -18,9 +18,10 @@ var argv = require('yargs')
   .help('h')
   .argv;
 
-var options = argv.profile ? {profile: argv.profile} : {};
-var credentials = new AWS.SharedIniFileCredentials(options);
-AWS.config.credentials = credentials;
+if(argv.profile) {
+  var credentials = new AWS.SharedIniFileCredentials(options);
+  AWS.config.credentials = credentials;
+}
 
 request('https://wtfismyip.com/text').then(function (result) {
   var ip = result.trim();

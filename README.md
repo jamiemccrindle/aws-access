@@ -1,18 +1,28 @@
-# Access
+# AWS Access
 
-## Prerequisites
+aws-access is a command line utility to update an AWS security group 
+with your current IP across one or more regions
 
-* nodejs 4.2+
-* aws credentials file in ~/.aws/credentials
+## Example
+
+    aws-access -p myprofile -g mysecuritygroup -r us-east-1 eu-west-1
+
+## Installing
+
+    npm install -g aws-access
 
 ## AWS Setup
 
 aws-access works by updating an AWS security group with your current ip. You'll
 need to create this group and attach it whichever resources you need to access.
 
-## Installing
+You'll also need your aws credentials set up either in ~/.aws/credentials or
+using environment variables.
 
-    npm install -g aws-access
+## Prerequisites
+
+* nodejs 4.2+
+* aws credentials file in ~/.aws/credentials
 
 ## Command Line
 
@@ -27,4 +37,4 @@ need to create this group and attach it whichever resources you need to access.
 
 ## Example
 
-    access -p myprofile -g mysecuritygroup
+    aws-access -p myprofile -g mysecuritygroup
