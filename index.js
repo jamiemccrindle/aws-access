@@ -28,7 +28,8 @@ var ec2 = Promise.promisifyAll(new AWS.EC2());
 var ip;
 var groupId;
 
-request('https://wtfismyip.com/text').then(function (result) {
+request('https://wtfismyip.com/text')
+  .then(function (result) {
   ip = result.trim();
   console.log('using ip ' + ip);
   return ec2.describeSecurityGroupsAsync({

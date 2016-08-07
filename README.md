@@ -5,6 +5,11 @@
 * nodejs 4.2+
 * aws credentials file in ~/.aws/credentials
 
+## AWS Setup
+
+aws-access works by updating an AWS security group with your current ip. You'll
+need to create this group and attach it whichever resources you need to access.
+
 ## Installing
 
     npm install -g aws-access
