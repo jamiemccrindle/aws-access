@@ -22,7 +22,7 @@ var options = argv.profile ? {profile: argv.profile} : {};
 var credentials = new AWS.SharedIniFileCredentials(options);
 AWS.config.credentials = credentials;
 
-for(var region in argv.regions) {
+Promise.map(argv.regions).then(function(region) {
   AWS.config.update({region: region});
 
   var ec2 = Promise.promisifyAll(new AWS.EC2());
@@ -30,7 +30,7 @@ for(var region in argv.regions) {
   var ip;
   var groupId;
 
-  request('https://wtfismyip.com/text')
+  return request('https://wtfismyip.com/text')
     .then(function (result) {
       ip = result.trim();
       console.log('using ip ' + ip);
@@ -81,11 +81,11 @@ for(var region in argv.regions) {
         }
       })
     });
-  }).then(function () {
-    console.log('updated group ' + groupId + ' to ip ' + ip + '/32 and ports ' + argv.ports);
-    process.exit(0);
-  }).error(function (error) {
-    console.log(error.stack);
-    process.exit(1);
-  });
-}
+  })
+}).then(function () {
+  console.log('updated group ' + groupId + ' to ip ' + ip + '/32 and ports ' + argv.ports);
+  process.exit(0);
+}).error(function (error) {
+  console.log(error.stack);
+  process.exit(1);
+});

@@ -1,9 +1,9 @@
 {
   "name": "aws-access",
   "version": "1.0.0",
-  "description": "Update an AWS security group with your current IP",
+  "description": "Update an AWS security group with your current IP across one or more regions",
   "main": "index.js",
-  "homepage": "https://github.com/jamiemccrind/aws-access/",
+  "homepage": "https://github.com/jamiemccrindle/aws-access/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,9 +13,9 @@
   "author": "Jamie McCrindle",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jamiemccrind/aws-access/"
+    "url": "git://github.com/jamiemccrindle/aws-access/"
   },
-  "license": "Apache 2",
+  "license": "Apache-2.0",
   "dependencies": {
     "aws-sdk": "^2.4.0",
     "bluebird": "^3.4.1",
