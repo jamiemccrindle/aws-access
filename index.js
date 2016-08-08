@@ -19,7 +19,7 @@ var argv = require('yargs')
   .argv;
 
 if(argv.profile) {
-  var credentials = new AWS.SharedIniFileCredentials(options);
+  var credentials = new AWS.SharedIniFileCredentials({profile: argv.profile});
   AWS.config.credentials = credentials;
 }
 
