@@ -30,7 +30,7 @@ using environment variables.
 
     Options:
       -h             Show help                                             [boolean]
-      -p, --profile                                                       [required]
+      -p, --profile                                                       [optional]
       -g, --group                                                         [required]
       -r, --region                                            [default: "us-east-1"]
       -P, --ports                                          [array] [default: ["22"]]
