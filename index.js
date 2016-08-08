@@ -5,14 +5,14 @@ var Promise = require('bluebird');
 var request = require('request-promise');
 
 var argv = require('yargs')
-  .usage('access')
+  .usage('aws-access')
   .alias('p', 'profile')
   .alias('g', 'group')
   .alias('r', 'regions')
   .alias('P', 'ports')
   .array('P')
   .array('r')
-  .demand(['p', 'g'])
+  .demand(['g'])
   .default('r', 'us-east-1')
   .default('P', ['22'])
   .help('h')
