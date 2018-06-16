@@ -15,7 +15,8 @@ To use:
 
 ## Example
 
-    aws-access -p myprofile -g mysecuritygroup -r us-east-1 eu-west-1
+    # enable access to SSH and Postgres from the current IP
+    aws-access -p myprofile -g mysecuritygroup -r us-east-1 eu-west-1 -P 22 5432
 
 ## Installing
 
