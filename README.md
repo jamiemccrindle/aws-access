@@ -1,9 +1,10 @@
 # AWS Access
 
-aws-access is a command line utility to update an AWS security group 
-with your current IP across one or more regions.
+aws-access is a command line utility to update an AWS security group with your current IP 
+across one or more regions.
 
-This is a relatively cheap way to lock down access to AWS resources to whitelisted ips.
+This is a relatively cheap way to lock down access to AWS resources to whitelisted ips. 
+Defaults to whitelisting port 22. Configure ports using the --ports|-P argument.
 
 To use:
 
