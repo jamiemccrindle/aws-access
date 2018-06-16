@@ -44,7 +44,3 @@ using environment variables.
       -g, --group                                                         [required]
       -r, --region                                            [default: "us-east-1"]
       -P, --ports                                          [array] [default: ["22"]]
-
-## Example
-
-    aws-access -p myprofile -g mysecuritygroup
