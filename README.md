@@ -44,3 +44,11 @@ using environment variables.
       -g, --group                                                         [required]
       -r, --region                                            [default: "us-east-1"]
       -P, --ports                                          [array] [default: ["22"]]
+
+## Security Considerations
+
+* It's likely that a users IP will be stale over time, potentially allowing access to the AWS resources from unexpected IPs. This is still better than allowing access from the whole internet (i.e. 0.0.0.0/0) but this should be part of a defense in depth i.e. resources that are made accessible via aws-access should also be properly secured.
+* Removing old users from the security group managed by aws-access should be part of any offboarding process
+* If a user is renamed, their old username should be cleaned from the security group managed by aws-access
+* If this is used for multiple users, any of the users have the ability to modify rules set up by other users
+
