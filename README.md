@@ -1,7 +1,17 @@
 # AWS Access
 
 aws-access is a command line utility to update an AWS security group 
-with your current IP across one or more regions
+with your current IP across one or more regions.
+
+This is a relatively cheap way to lock down access to AWS resources to whitelisted ips.
+
+To use:
+
+* Step 1: Create security group for whitelisted ips e.g. 'remote-working'
+* Step 2: Assign security group to appropriate resources
+* Step 3: Install aws-access `npm install -g aws-access`
+* Step 4: [Set up aws credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html)
+* Step 5: Run aws-access to whitelist your current ip e.g. `aws-access -p myprofile -g remote-working -r us-east-1 eu-west-1`
 
 ## Example
 
@@ -21,7 +31,7 @@ using environment variables.
 
 ## Prerequisites
 
-* nodejs 4.2+
+* nodejs 7.6+
 * aws credentials file in ~/.aws/credentials
 
 ## Command Line
