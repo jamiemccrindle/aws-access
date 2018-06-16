@@ -1,53 +1,59 @@
 #!/usr/bin/env node
 
-var AWS = require('aws-sdk');
-var Promise = require('bluebird');
-var request = require('request-promise');
+const AWS = require("aws-sdk");
+const axios = require("axios");
 
-var argv = require('yargs')
-  .usage('aws-access')
-  .alias('p', 'profile')
-  .alias('g', 'group')
-  .alias('r', 'regions')
-  .alias('P', 'ports')
-  .array('P')
-  .array('r')
-  .demand(['g'])
-  .default('r', 'us-east-1')
-  .default('P', ['22'])
-  .help('h')
-  .argv;
+async function run(options) {
+  const { group, regions, ports } = options;
+  const { data } = await axios("https://wtfismyip.com/text");
+  const ip = data.trim();
+  console.log("using ip " + ip);
 
-if(argv.profile) {
-  var credentials = new AWS.SharedIniFileCredentials({profile: argv.profile});
-  AWS.config.credentials = credentials;
-}
+  const iam = new AWS.IAM();
+  const date = new Date().toISOString().slice(0, 16);
 
-request('https://wtfismyip.com/text').then(function (result) {
-  var ip = result.trim();
-  console.log('using ip ' + ip);
-  return Promise.each(argv.regions, function (region) {
-    AWS.config.update({region: region});
+  const {
+    User: { UserName: userName }
+  } = await iam.getUser().promise();
 
-    var ec2 = Promise.promisifyAll(new AWS.EC2());
+  for (let region of regions) {
+    AWS.config.update({ region: region });
+    const ec2 = new AWS.EC2();
+    const { SecurityGroups: securityGroups } = await ec2
+      .describeSecurityGroups({
+        GroupNames: [group]
+      })
+      .promise();
+    if (securityGroups == undefined) {
+      throw "No security groups found with name " + group;
+    }
+    if (securityGroups.length != 1) {
+      throw "Should only be 1 security group but was " + securityGroups.length;
+    }
 
-    var groupId;
+    const securityGroup = securityGroups[0];
 
-    return ec2.describeSecurityGroupsAsync({
-      GroupNames: [argv.group]
-    }).then(function (data) {
-      if (!data['SecurityGroups']) {
-        return Promise.reject('No security groups found with name ' + argv.group)
-      }
-      if (data['SecurityGroups'].length != 1) {
-        return Promise.reject("Should only be 1 security group but was " + data['SecurityGroups'].length)
-      }
-      var group = data['SecurityGroups'][0];
-      groupId = group.GroupId;
-      console.log(region + ' found group ' + groupId);
-      var ipPermissions = group.IpPermissions.map(function (permission) {
-        var result = {};
-        Object.keys(permission).forEach(function (key) {
+    console.log(JSON.stringify(securityGroup, null, " "));
+
+    const groupId = securityGroup.GroupId;
+    console.log(region + " found securityGroup " + groupId);
+
+    const ipPermissions = securityGroup.IpPermissions
+      // only change permissions for the current user
+      .filter(permission => {
+        return (
+          permission.IpRanges &&
+          permission.IpRanges.some(
+            range =>
+              range.Description === undefined ||
+              range.Description.trim().length === 0 ||
+              range.Description === userName
+          )
+        );
+      })
+      .map(permission => {
+        const result = {};
+        Object.keys(permission).forEach(key => {
           if (permission[key]) {
             if (Array.isArray(permission[key])) {
               if (permission[key].length > 0) {
@@ -60,33 +66,74 @@ request('https://wtfismyip.com/text').then(function (result) {
         });
         return result;
       });
-      return ec2.revokeSecurityGroupIngressAsync({
+
+    if (ipPermissions.length > 0) {
+      await ec2
+        .revokeSecurityGroupIngress({
+          GroupId: groupId,
+          IpPermissions: ipPermissions
+        })
+        .promise();
+    }
+
+    await ec2
+      .authorizeSecurityGroupIngress({
         GroupId: groupId,
-        IpPermissions: ipPermissions
-      })
-    }).then(function () {
-      return ec2.authorizeSecurityGroupIngressAsync({
-        GroupId: groupId,
-        IpPermissions: argv.ports.map(function (port) {
-          var p = parseInt(port);
+        IpPermissions: ports.map(function(port) {
+          const p = parseInt(port);
           return {
             IpRanges: [
-              {CidrIp: ip + '/32'}
+              {
+                CidrIp: ip + "/32",
+                Description: `${userName}`
+              }
             ],
             FromPort: p,
             ToPort: p,
-            IpProtocol: 'tcp'
-          }
+            IpProtocol: "tcp"
+          };
         })
-      });
-    }).then(function () {
-      console.log(region + ' updated group ' + groupId + ' to ip ' + ip + '/32 and ports ' + argv.ports);
-    });
+      })
+      .promise();
+
+    console.log(
+      region +
+        " updated group " +
+        groupId +
+        " to ip " +
+        ip +
+        "/32 and ports " +
+        ports
+    );
+  }
+}
+
+const argv = require("yargs")
+  .usage("aws-access")
+  .alias("p", "profile")
+  .alias("g", "group")
+  .alias("r", "regions")
+  .alias("P", "ports")
+  .array("P")
+  .array("r")
+  .demand(["g"])
+  .default("r", "us-east-1")
+  .default("P", ["22"])
+  .help("h").argv;
+
+if (argv.profile) {
+  const credentials = new AWS.SharedIniFileCredentials({
+    profile: argv.profile
   });
-}).then(function () {
-  console.log('done');
-  process.exit(0);
-}).error(function (error) {
-  console.log(error.stack);
-  process.exit(1);
-});
+  AWS.config.credentials = credentials;
+}
+
+run(argv)
+  .then(function() {
+    console.log("done");
+    process.exit(0);
+  })
+  .catch(function(error) {
+    console.log(error.stack);
+    process.exit(1);
+  });
