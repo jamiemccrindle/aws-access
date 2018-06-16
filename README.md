@@ -11,7 +11,7 @@ To use:
 * Step 2: Assign security group to appropriate resources
 * Step 3: Install aws-access `npm install -g aws-access`
 * Step 4: [Set up aws credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html)
-* Step 5: Run aws-access to whitelist your current ip e.g. `aws-access -p myprofile -g remote-working -r us-east-1 eu-west-1`
+* Step 5: Run aws-access to whitelist your current ip e.g. `aws-access -g remote-working`
 
 ## Example
 
