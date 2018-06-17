@@ -1,6 +1,6 @@
 {
   "name": "aws-access",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Update an AWS security group with your current IP",
   "main": "index.js",
   "homepage": "https://github.com/jamiemccrindle/aws-access/",
