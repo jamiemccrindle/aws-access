@@ -45,8 +45,6 @@ async function run(options) {
           permission.IpRanges &&
           permission.IpRanges.some(
             range =>
-              range.Description === undefined ||
-              range.Description.trim().length === 0 ||
               range.Description === userName
           )
         );
