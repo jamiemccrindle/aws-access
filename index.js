@@ -33,10 +33,8 @@ async function run(options) {
 
     const securityGroup = securityGroups[0];
 
-    console.log(JSON.stringify(securityGroup, null, " "));
-
     const groupId = securityGroup.GroupId;
-    console.log(region + " found securityGroup " + groupId);
+    console.log(region + " found group " + groupId);
 
     const ipPermissions = securityGroup.IpPermissions
       // only change permissions for the current user
