@@ -4,8 +4,8 @@ const AWS = require("aws-sdk");
 const axios = require("axios");
 
 async function run(options) {
-  const { group, regions, ports } = options;
-  const { data } = await axios("https://wtfismyip.com/text");
+  const { group, regions, ports, url } = options;
+  const { data } = await axios(url);
   const ip = data.trim();
   console.log("using ip " + ip);
 
@@ -110,11 +110,13 @@ const argv = require("yargs")
   .alias("g", "group")
   .alias("r", "regions")
   .alias("P", "ports")
+  .alias("u", "url")
   .array("P")
   .array("r")
   .demand(["g"])
   .default("r", "us-east-1")
   .default("P", ["22"])
+  .default("u", "http://checkip.amazonaws.com/")
   .help("h").argv;
 
 if (argv.profile) {
