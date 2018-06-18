@@ -26,7 +26,6 @@ To use:
 ## Prerequisites
 
 * nodejs 7.6+
-* aws credentials file in ~/.aws/credentials
 
 ## Command Line
 
