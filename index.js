@@ -36,15 +36,16 @@ async function run(options) {
     const groupId = securityGroup.GroupId;
     console.log(region + " found group " + groupId);
 
-    const ipPermissions = securityGroup.IpPermissions
+    let ipPermissions = securityGroup.IpPermissions
       // only change permissions for the current user
       .filter(permission => {
         return (
           permission.IpRanges &&
           permission.IpRanges.some(
             range =>
-              range.Description === userName
-          )
+              range.Description === `${userName}`
+          ) && 
+          ports.includes(permission.ToPort)
         );
       })
       .map(permission => {
@@ -62,6 +63,8 @@ async function run(options) {
         });
         return result;
       });
+    
+    let newIpPermissions = [];
 
     if (ipPermissions.length > 0) {
       await ec2
@@ -69,15 +72,37 @@ async function run(options) {
           GroupId: groupId,
           IpPermissions: ipPermissions
         })
-        .promise();
-    }
+        .promise();  
 
-    await ec2
-      .authorizeSecurityGroupIngress({
-        GroupId: groupId,
-        IpPermissions: ports.map(function(port) {
-          const p = parseInt(port);
-          return {
+      newIpPermissions = ports.map(function(port) {
+        const p = parseInt(port);
+        let ret = null;
+        ipPermissions.forEach(function(permission) {
+          if(permission.ToPort === p) {
+            let ipRanges = permission.IpRanges.map(function(range) {
+              if(range.Description === `${userName}`) {
+                return {
+                  CidrIp: ip + "/32",
+                  Description: `${userName}`
+                };
+              } else {
+                return {
+                  CidrIp: range.CidrIp,
+                  Description: range.Description                 
+                };
+              }
+            });
+            ret = {            
+              IpRanges: ipRanges,
+              FromPort: p,
+              ToPort: p,
+              IpProtocol: "tcp"
+            };
+          }
+        });
+        
+        if(!ret) {
+          ret = {
             IpRanges: [
               {
                 CidrIp: ip + "/32",
@@ -88,7 +113,30 @@ async function run(options) {
             ToPort: p,
             IpProtocol: "tcp"
           };
-        })
+        }
+        return ret;
+      });
+    } else {
+      newIpPermissions = ports.map(function(port) {
+        const p = parseInt(port);
+        return {
+          IpRanges: [
+            {
+              CidrIp: ip + "/32",
+              Description: `${userName}`
+            }
+          ],
+          FromPort: p,
+          ToPort: p,
+          IpProtocol: "tcp"
+        };
+      });
+    }
+
+    await ec2
+      .authorizeSecurityGroupIngress({
+        GroupId: groupId,
+        IpPermissions: newIpPermissions
       })
       .promise();
 
